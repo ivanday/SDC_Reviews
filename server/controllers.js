@@ -12,7 +12,7 @@ const client = new Client(credentials);
 client.connect();
 
 const getReviews = (product_id) => {
-  return client.query(`EXPLAIN ANALYZE SELECT * FROM reviews
+  return client.query(`SELECT * FROM reviews
   WHERE product_id = ${product_id}
   `)
 };
@@ -47,18 +47,16 @@ const getReviewMetadata = (product_id) => {
     })
   })
   .then((response) => {
-    console.log(result);
     //query for the recommended count on reviews
     return client.query(`select recommend, rating from reviews where product_id = ${product_id}`)
   })
   .then((response) => {
     //iterate over reviews and tally for returned object
-    console.log(response.rows);
     response.rows.forEach((row) => {
       result.ratings[row.rating] += 1;
       result.recommended[row.recommend] += 1;
     })
-    console.log(result);
+    return result;
   })
 }
 

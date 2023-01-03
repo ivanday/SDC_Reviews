@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 // const cors = require('cors');
-let {getReviews} = require('./controllers.js');
+let {getReviews, getReviewMetadata} = require('./controllers.js');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -10,6 +10,13 @@ app.use(express.json());
 
 app.get('/reviews/:product_id', (req, res) => {
   getReviews(req.query.product_id);
+});
+
+app.get('/reviews/meta/:product_id', (req, res) => {
+  getReviewsMetaData(req.query.product_id)
+    .then((result) => {
+      res.sent(result);
+    })
 });
 
 
