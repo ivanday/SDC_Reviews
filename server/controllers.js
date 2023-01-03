@@ -53,7 +53,12 @@ const getReviewMetadata = (product_id) => {
   })
   .then((response) => {
     //iterate over reviews and tally for returned object
-
+    console.log(response.rows);
+    response.rows.forEach((row) => {
+      result.ratings[row.rating] += 1;
+      result.recommended[row.recommend] += 1;
+    })
+    console.log(result);
   })
 }
 
