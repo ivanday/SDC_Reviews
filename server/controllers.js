@@ -40,13 +40,14 @@ const getReviewMetadata = (product_id) => {
     //set the characteristics names and values
     response.rows.forEach((row) => {
       if (result.characteristics[row.name]) {
-        result.characteristics[row.name].push(row.value);
+        result.characteristics[row.name].value.push(row.value);
       } else {
-        result.characteristics[row.name] = [row.value];
+        result.characteristics[row.name] = {'id': row.value, 'value': [row.value]};
       }
     })
   })
   .then((response) => {
+    console.log(result);
     //query for the recommended count on reviews
     return client.query(`select recommend, rating from reviews where product_id = ${product_id}`)
   })
