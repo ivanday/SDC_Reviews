@@ -21,8 +21,10 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(cors());
 app.use(express.json());
 
-app.get('/reviews/:product_id', (req, res) => {
-  getReviews(req.query.product_id);
+app.get('/reviews', (req, res) => {
+  getReviews(req.query.product_id, req.query.page, req.query.count, req.query.sort).then((response) => {
+    res.send(response);
+  })
 });
 
 app.get('/reviews/meta/:product_id', (req, res) => {

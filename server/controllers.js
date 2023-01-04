@@ -36,6 +36,9 @@ const getReviews = (product_id, page=0, count=5, sort="newest") => {
     for (const row of response.rows) {
       let photos = await client.query(`select id, url from reviews_photos where review_id = ${row.review_id}`);
       row.photos = photos.rows;
+      //convert date of the row from unix time to ISO 8601
+      let date = new Date(row.date * 1000).toISOString();;
+      row.date = date;
       result.results.push(row);
     }
 
@@ -89,9 +92,9 @@ const getReviewMetadata = (product_id) => {
   })
 }
 
-getReviews(2, 0, 5, "helpful").then((response) => {
-  console.log(response);
-});
+// getReviews(2, 0, 5, "helpful").then((response) => {
+//   console.log(response);
+// });
 
 // getReviewMetadata(1);
 
