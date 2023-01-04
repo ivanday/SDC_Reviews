@@ -32,6 +32,10 @@ app.get('/reviews/meta', (req, res) => {
 
 });
 
+app.post('/reviews', (req, res) => {
+
+});
+
 
 app.listen(3000, (err) => {
   if (err) {
