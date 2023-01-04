@@ -66,7 +66,7 @@ const getReviewMetadata = (product_id) => {
     'characteristics': {}
   };
   //get characteristic value data for each review
-  return client.query(`select cr.characteristic_id, cr.review_id, cr.value, "c".name from characteristic_reviews cr inner join reviews r on cr.review_id = r.id inner join "characteristics" "c" on cr.characteristic_id = "c".id where r.product_id = ${product_id};`)
+  return client.query(`select cr.characteristic_id, cr.review_id, cr.value, "c".name from characteristic_reviews cr inner join reviews r on cr.review_id = r.review_id inner join "characteristics" "c" on cr.characteristic_id = "c".id where r.product_id = ${product_id};`)
   .then((response) => {
     //set the characteristics names and values
     response.rows.forEach((row) => {

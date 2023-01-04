@@ -13,9 +13,6 @@ const credentials = {
   port: 5432,
 };
 
-const client = new Client(credentials);
-client.connect();
-
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 // app.use(cors());
@@ -27,9 +24,9 @@ app.get('/reviews', (req, res) => {
   })
 });
 
-app.get('/reviews/meta/:product_id', (req, res) => {
+app.get('/reviews/meta', (req, res) => {
 
-  getReviewMetadata(req.params.product_id).then((response) => {
+  getReviewMetadata(req.query.product_id).then((response) => {
     res.send(response);
   })
 
