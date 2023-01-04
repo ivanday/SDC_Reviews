@@ -3,6 +3,19 @@ const path = require('path');
 // const cors = require('cors');
 let {getReviews, getReviewMetadata} = require('./controllers.js');
 
+const { Pool, Client } = require("pg");
+
+const credentials = {
+  user: "admin",
+  host: "localhost",
+  database: "sdc",
+  password: "password",
+  port: 5432,
+};
+
+const client = new Client(credentials);
+client.connect();
+
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 // app.use(cors());
@@ -13,10 +26,11 @@ app.get('/reviews/:product_id', (req, res) => {
 });
 
 app.get('/reviews/meta/:product_id', (req, res) => {
-  getReviewsMetaData(req.query.product_id)
-    .then((result) => {
-      res.sent(result);
-    })
+
+  getReviewMetadata(req.params.product_id).then((response) => {
+    res.send(response);
+  })
+
 });
 
 

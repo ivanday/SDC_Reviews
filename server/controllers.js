@@ -35,7 +35,7 @@ const getReviewMetadata = (product_id) => {
     'characteristics': {}
   };
   //get characteristic value data for each review
-  client.query(`select cr.characteristic_id, cr.review_id, cr.value, "c".name from characteristic_reviews cr inner join reviews r on cr.review_id = r.id inner join "characteristics" "c" on cr.characteristic_id = "c".id where r.product_id = ${product_id};`)
+  return client.query(`select cr.characteristic_id, cr.review_id, cr.value, "c".name from characteristic_reviews cr inner join reviews r on cr.review_id = r.id inner join "characteristics" "c" on cr.characteristic_id = "c".id where r.product_id = ${product_id};`)
   .then((response) => {
     //set the characteristics names and values
     response.rows.forEach((row) => {
@@ -45,8 +45,6 @@ const getReviewMetadata = (product_id) => {
         result.characteristics[row.name] = {'id': row.value, 'value': [row.value]};
       }
     })
-  })
-  .then((response) => {
     //query for the recommended count on reviews
     return client.query(`select recommend, rating from reviews where product_id = ${product_id}`)
   })
@@ -58,13 +56,16 @@ const getReviewMetadata = (product_id) => {
     })
     return result;
   })
+  .catch((err) => {
+    console.log(err);
+  })
 }
 
 // getReviews(1).then((response) => {
 //   console.log(response.rows);
 // })
 
-getReviewMetadata(1);
+// getReviewMetadata(1);
 
 module.exports = {
   getReviews,
