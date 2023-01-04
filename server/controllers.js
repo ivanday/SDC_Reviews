@@ -11,10 +11,38 @@ const credentials = {
 const client = new Client(credentials);
 client.connect();
 
-const getReviews = (product_id) => {
-  return client.query(`SELECT * FROM reviews
-  WHERE product_id = ${product_id}
+const getReviews = (product_id, page=0, count=5, sort="newest") => {
+  let offset = page * count;
+  //establish result object
+
+  const sortOptions = {
+    'newest': 'date',
+    'helpful': 'helpfulness',
+    'relevant': '?'
+  }
+
+  const result = {
+    'product': product_id,
+    'page': page,
+    'count': count,
+    'results': []
+  };
+  //query database for reviews
+  return client.query(`SELECT review_id, rating, date, summary, body, recommend, reviewer_name, response, rating, helpfulness FROM reviews
+  WHERE product_id = ${product_id} order by ${sortOptions[sort]} desc offset ${offset} rows fetch next ${count} rows only;
   `)
+  .then(async (response) => {
+    //query for photos based on review id
+    for (const row of response.rows) {
+      let photos = await client.query(`select id, url from reviews_photos where review_id = ${row.review_id}`);
+      row.photos = photos.rows;
+      result.results.push(row);
+    }
+
+    return Promise.all(result.results).then(() => {
+      return result;
+    })
+  })
 };
 
 const getReviewMetadata = (product_id) => {
@@ -61,11 +89,13 @@ const getReviewMetadata = (product_id) => {
   })
 }
 
-// getReviews(1).then((response) => {
-//   console.log(response.rows);
-// })
+getReviews(2, 0, 5, "helpful").then((response) => {
+  console.log(response);
+});
 
 // getReviewMetadata(1);
+
+
 
 module.exports = {
   getReviews,
