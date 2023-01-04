@@ -18,7 +18,7 @@ const getReviews = (product_id, page=0, count=5, sort="newest") => {
   const sortOptions = {
     'newest': 'date',
     'helpful': 'helpfulness',
-    'relevant': '?'
+    'relevant': 'review_id'
   }
 
   const result = {
