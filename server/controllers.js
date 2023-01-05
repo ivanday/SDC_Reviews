@@ -96,18 +96,32 @@ const postReview = (queryObject) => {
   //add in the post request data and return the new review_id
   return client.query(`INSERT INTO reviews ("product_id", "rating", "date", "summary", "body", "recommend", "reported", "reviewer_name", "reviewer_email", "response", "helpfulness") VALUES (${queryObject.product_id}, ${queryObject.rating}, ${Date.now()}, '${queryObject.summary}', '${queryObject.body}', '${queryObject.recommend}', 'false', '${queryObject.name}', '${queryObject.email}', 'null', 0) RETURNING review_id;`)
   .then((response) => {
-    console.log(response);
+    //check if there are photos to be added
+    queryObject.review_id = response.rows[0].review_id;
     if (queryObject.photos.length > 0) {
       let queryString = '';
+      //craft query string for multi-row insertion
       for (photo of queryObject.photos) {
-        queryString = queryString + `(${response.rows[0].review_id}, '${photo}'), `
+        queryString = queryString + `(${queryObject.review_id}, '${photo}'), `
       }
+      //remove trailing comma and space from query
       queryString = queryString.substring(0, queryString.length - 2);
+      //insert into photos table query
       return client.query(`INSERT INTO reviews_photos ("review_id", "url") VALUES ${queryString};`);
+    } else {
+      return;
     }
   })
   .then((response) => {
-    console.log('query finished');
+    //add characteristics to table
+    let queryString = '';
+    for (const [key, value] of Object.entries(queryObject.characteristics)) {
+      queryString = queryString + `(${queryObject.review_id}, ${key}, ${value}), `;
+    }
+    queryString = queryString.substring(0, queryString.length - 2);
+    return client.query(`INSERT INTO characteristic_reviews ("review_id", "characteristic_id", "value") VALUES ${queryString};`)
+  }).then((response) => {
+    console.log('worked!');
   })
 }
 
@@ -120,6 +134,12 @@ const queryObject = {
   name: 'ivan',
   email: 'ivantest@gmail.com',
   photos: ['https://www.shutterstock.com/image-vector/sample-red-square-grunge-stamp-260nw-338250266.jpg'],
+  characteristics: {
+    '14': '3',
+    '15': '4',
+    '16': '5',
+    '17': '2'
+  }
 }
 
 postReview(queryObject);
