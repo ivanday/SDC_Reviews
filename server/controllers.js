@@ -92,11 +92,12 @@ const getReviewMetadata = (product_id) => {
   })
 }
 
-// getReviews(2, 0, 5, "helpful").then((response) => {
-//   console.log(response);
-// });
+const postReview = (queryObject) => {
+  return client.query(`insert into reviews (product_id, rating, date, summary, body, recommend, reported, reviewer name, reviewer_email, response, helpfulness) values (${queryObject.product_id}, ${queryObject.rating}, ${Date.now()}, ${queryObject.summary}, ${queryObject.body}, ${queryObject.recommend}, 'false', ${queryObject.name}, ${queryObject.email}`)
+  .then((response) => {
 
-// getReviewMetadata(1);
+  })
+}
 
 
 
