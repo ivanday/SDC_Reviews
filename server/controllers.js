@@ -123,6 +123,27 @@ const postReview = (queryObject) => {
   });
 }
 
+// const queryObject = {
+//   product_id: 1,
+//   rating: 1,
+//   summary: 'test summary aoishdioahsd',
+//   body: 'test body aasd',
+//   recommend: true,
+//   name: 'ivan',
+//   email: 'ivantest@gmail.com',
+//   photos: ['https://www.shutterstock.com/image-vector/sample-red-square-grunge-stamp-260nw-338250266.jpg'],
+//   characteristics: {
+//     '14': '3',
+//     '15': '4',
+//     '16': '5',
+//     '17': '2'
+//   }
+// }
+
+// postReview(queryObject);
+
+
+
 module.exports = {
   getReviews,
   getReviewMetadata
