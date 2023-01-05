@@ -29,7 +29,7 @@ const getReviews = (product_id, page=0, count=5, sort="newest") => {
   };
   //query database for reviews
   return client.query(`SELECT review_id, rating, date, summary, body, recommend, reviewer_name, response, rating, helpfulness FROM reviews
-  WHERE product_id = ${product_id} order by ${sortOptions[sort]} desc offset ${offset} rows fetch next ${count} rows only;
+  WHERE product_id = ${product_id} ORDER BY ${sortOptions[sort]} DESC OFFSET ${offset} ROWS FETCH NEXT ${count} ROWS ONLY;
   `)
   .then(async (response) => {
     //query for photos based on review id
@@ -37,7 +37,7 @@ const getReviews = (product_id, page=0, count=5, sort="newest") => {
       let photos = await client.query(`select id, url from reviews_photos where review_id = ${row.review_id}`);
       row.photos = photos.rows;
       //convert date of the row from unix time to ISO 8601
-      let date = new Date(row.date * 1000).toISOString();;
+      let date = new Date(Number(row.date));
       row.date = date;
       result.results.push(row);
     }
