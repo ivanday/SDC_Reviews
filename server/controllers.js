@@ -93,11 +93,36 @@ const getReviewMetadata = (product_id) => {
 }
 
 const postReview = (queryObject) => {
-  return client.query(`insert into reviews (product_id, rating, date, summary, body, recommend, reported, reviewer name, reviewer_email, response, helpfulness) values (${queryObject.product_id}, ${queryObject.rating}, ${Date.now()}, ${queryObject.summary}, ${queryObject.body}, ${queryObject.recommend}, 'false', ${queryObject.name}, ${queryObject.email}`)
+  //add in the post request data and return the new review_id
+  return client.query(`INSERT INTO reviews ("product_id", "rating", "date", "summary", "body", "recommend", "reported", "reviewer_name", "reviewer_email", "response", "helpfulness") VALUES (${queryObject.product_id}, ${queryObject.rating}, ${Date.now()}, '${queryObject.summary}', '${queryObject.body}', '${queryObject.recommend}', 'false', '${queryObject.name}', '${queryObject.email}', 'null', 0) RETURNING review_id;`)
   .then((response) => {
-
+    console.log(response);
+    if (queryObject.photos.length > 0) {
+      let queryString = '';
+      for (photo of queryObject.photos) {
+        queryString = queryString + `(${response.rows[0].review_id}, '${photo}'), `
+      }
+      queryString = queryString.substring(0, queryString.length - 2);
+      return client.query(`INSERT INTO reviews_photos ("review_id", "url") VALUES ${queryString};`);
+    }
+  })
+  .then((response) => {
+    console.log('query finished');
   })
 }
+
+const queryObject = {
+  product_id: 1,
+  rating: 1,
+  summary: 'test summary aoishdioahsd',
+  body: 'test body aasd',
+  recommend: true,
+  name: 'ivan',
+  email: 'ivantest@gmail.com',
+  photos: ['https://www.shutterstock.com/image-vector/sample-red-square-grunge-stamp-260nw-338250266.jpg'],
+}
+
+postReview(queryObject);
 
 
 
