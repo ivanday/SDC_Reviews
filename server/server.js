@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 // const cors = require('cors');
-let {getReviews, getReviewMetadata} = require('./controllers.js');
+let {getReviews, getReviewMetadata, postReview} = require('./controllers.js');
 
 const { Pool, Client } = require("pg");
 
@@ -14,8 +14,8 @@ const credentials = {
 };
 
 const app = express();
-app.use(express.urlencoded({ extended: true }));
 app.use(require('body-parser').urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get('/reviews', (req, res) => {
@@ -33,7 +33,12 @@ app.get('/reviews/meta', (req, res) => {
 });
 
 app.post('/reviews', (req, res) => {
-
+  postReview(req.body).then((response) => {
+    res.status(201).end();
+  }).catch((err) => {
+    res.send(err);
+    res.status(400).end();
+  })
 });
 
 

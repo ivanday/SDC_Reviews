@@ -146,6 +146,7 @@ const postReview = (queryObject) => {
 
 module.exports = {
   getReviews,
-  getReviewMetadata
+  getReviewMetadata,
+  postReview
 }
 
