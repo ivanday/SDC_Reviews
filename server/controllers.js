@@ -29,7 +29,7 @@ const getReviews = (product_id, page=0, count=5, sort="newest") => {
   };
   //query database for reviews
   return client.query(`SELECT review_id, rating, date, summary, body, recommend, reviewer_name, response, rating, helpfulness FROM reviews
-  WHERE product_id = ${product_id} order by ${sortOptions[sort]} desc offset ${offset} rows fetch next ${count} rows only;
+  WHERE product_id = ${product_id} ORDER BY ${sortOptions[sort]} DESC OFFSET ${offset} ROWS FETCH NEXT ${count} ROWS ONLY;
   `)
   .then(async (response) => {
     //query for photos based on review id
@@ -37,7 +37,7 @@ const getReviews = (product_id, page=0, count=5, sort="newest") => {
       let photos = await client.query(`select id, url from reviews_photos where review_id = ${row.review_id}`);
       row.photos = photos.rows;
       //convert date of the row from unix time to ISO 8601
-      let date = new Date(row.date * 1000).toISOString();;
+      let date = new Date(Number(row.date));
       row.date = date;
       result.results.push(row);
     }
@@ -92,16 +92,61 @@ const getReviewMetadata = (product_id) => {
   })
 }
 
-// getReviews(2, 0, 5, "helpful").then((response) => {
-//   console.log(response);
-// });
+const postReview = (queryObject) => {
+  //add in the post request data and return the new review_id
+  return client.query(`INSERT INTO reviews ("product_id", "rating", "date", "summary", "body", "recommend", "reported", "reviewer_name", "reviewer_email", "response", "helpfulness") VALUES (${queryObject.product_id}, ${queryObject.rating}, ${Date.now()}, '${queryObject.summary}', '${queryObject.body}', '${queryObject.recommend}', 'false', '${queryObject.name}', '${queryObject.email}', 'null', 0) RETURNING review_id;`)
+  .then((response) => {
+    //check if there are photos to be added
+    queryObject.review_id = response.rows[0].review_id;
+    if (queryObject.photos.length > 0) {
+      let queryString = '';
+      //craft query string for multi-row insertion
+      for (photo of queryObject.photos) {
+        queryString = queryString + `(${queryObject.review_id}, '${photo}'), `
+      }
+      //remove trailing comma and space from query
+      queryString = queryString.substring(0, queryString.length - 2);
+      //insert into photos table query
+      return client.query(`INSERT INTO reviews_photos ("review_id", "url") VALUES ${queryString};`);
+    } else {
+      return;
+    }
+  })
+  .then((response) => {
+    //add characteristics to table
+    let queryString = '';
+    for (const [key, value] of Object.entries(queryObject.characteristics)) {
+      queryString = queryString + `(${queryObject.review_id}, ${key}, ${value}), `;
+    }
+    queryString = queryString.substring(0, queryString.length - 2);
+    return client.query(`INSERT INTO characteristic_reviews ("review_id", "characteristic_id", "value") VALUES ${queryString};`)
+  });
+}
 
-// getReviewMetadata(1);
+// const queryObject = {
+//   product_id: 1,
+//   rating: 1,
+//   summary: 'test summary aoishdioahsd',
+//   body: 'test body aasd',
+//   recommend: true,
+//   name: 'ivan',
+//   email: 'ivantest@gmail.com',
+//   photos: ['https://www.shutterstock.com/image-vector/sample-red-square-grunge-stamp-260nw-338250266.jpg'],
+//   characteristics: {
+//     '14': '3',
+//     '15': '4',
+//     '16': '5',
+//     '17': '2'
+//   }
+// }
+
+// postReview(queryObject);
 
 
 
 module.exports = {
   getReviews,
-  getReviewMetadata
+  getReviewMetadata,
+  postReview
 }
 
