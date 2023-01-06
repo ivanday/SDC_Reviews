@@ -123,6 +123,10 @@ const postReview = (queryObject) => {
   });
 }
 
+const updateHelpful = (review_id) => {
+  return client.query(`UPDATE reviews SET helpfulness = helpfulness + 1 WHERE review_id = ${review_id}`)
+}
+
 // const queryObject = {
 //   product_id: 1,
 //   rating: 1,
@@ -147,6 +151,7 @@ const postReview = (queryObject) => {
 module.exports = {
   getReviews,
   getReviewMetadata,
-  postReview
+  postReview,
+  updateHelpful
 }
 
