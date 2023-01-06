@@ -29,7 +29,7 @@ const getReviews = (product_id, page=0, count=5, sort="newest") => {
   };
   //query database for reviews
   return client.query(`SELECT review_id, rating, date, summary, body, recommend, reviewer_name, response, rating, helpfulness FROM reviews
-  WHERE product_id = ${product_id} ORDER BY ${sortOptions[sort]} DESC OFFSET ${offset} ROWS FETCH NEXT ${count} ROWS ONLY;
+  WHERE product_id = ${product_id} AND reported = false ORDER BY ${sortOptions[sort]} DESC OFFSET ${offset} ROWS FETCH NEXT ${count} ROWS ONLY;
   `)
   .then(async (response) => {
     //query for photos based on review id
