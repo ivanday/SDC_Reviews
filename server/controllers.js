@@ -119,12 +119,16 @@ const postReview = (queryObject) => {
       queryString = queryString + `(${queryObject.review_id}, ${key}, ${value}), `;
     }
     queryString = queryString.substring(0, queryString.length - 2);
-    return client.query(`INSERT INTO characteristic_reviews ("review_id", "characteristic_id", "value") VALUES ${queryString};`)
+    return client.query(`INSERT INTO characteristic_reviews ("review_id", "characteristic_id", "value") VALUES ${queryString};`);
   });
 }
 
 const updateHelpful = (review_id) => {
-  return client.query(`UPDATE reviews SET helpfulness = helpfulness + 1 WHERE review_id = ${review_id}`)
+  return client.query(`UPDATE reviews SET helpfulness = helpfulness + 1 WHERE review_id = ${review_id}`);
+}
+
+const reportReview = (review_id) => {
+  return client.query(`UPDATE reviews SET reported = true WHERE review_id = ${review_id}`);
 }
 
 // const queryObject = {
@@ -152,6 +156,7 @@ module.exports = {
   getReviews,
   getReviewMetadata,
   postReview,
-  updateHelpful
+  updateHelpful,
+  reportReview
 }
 
