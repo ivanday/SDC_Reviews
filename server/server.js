@@ -41,6 +41,9 @@ app.post('/reviews', (req, res) => {
   })
 });
 
+app.put('/reviews/:review_id/helpful', (req, res) => {
+  console.log(req);
+});
 
 app.listen(3000, (err) => {
   if (err) {
