@@ -52,6 +52,10 @@ app.put('/reviews/:review_id/helpful', (req, res) => {
   })
 });
 
+app.put('/reviews/:review_id/report', (req, res) => {
+
+})
+
 app.listen(3000, (err) => {
   if (err) {
     return console.error(err);
