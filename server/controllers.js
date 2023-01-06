@@ -29,7 +29,7 @@ const getReviews = (product_id, page=0, count=5, sort="newest") => {
   };
   //query database for reviews
   return client.query(`SELECT review_id, rating, date, summary, body, recommend, reviewer_name, response, rating, helpfulness FROM reviews
-  WHERE product_id = ${product_id} ORDER BY ${sortOptions[sort]} DESC OFFSET ${offset} ROWS FETCH NEXT ${count} ROWS ONLY;
+  WHERE product_id = ${product_id} AND reported = false ORDER BY ${sortOptions[sort]} DESC OFFSET ${offset} ROWS FETCH NEXT ${count} ROWS ONLY;
   `)
   .then(async (response) => {
     //query for photos based on review id
@@ -119,12 +119,16 @@ const postReview = (queryObject) => {
       queryString = queryString + `(${queryObject.review_id}, ${key}, ${value}), `;
     }
     queryString = queryString.substring(0, queryString.length - 2);
-    return client.query(`INSERT INTO characteristic_reviews ("review_id", "characteristic_id", "value") VALUES ${queryString};`)
+    return client.query(`INSERT INTO characteristic_reviews ("review_id", "characteristic_id", "value") VALUES ${queryString};`);
   });
 }
 
 const updateHelpful = (review_id) => {
-  return client.query(`UPDATE reviews SET helpfulness = helpfulness + 1 WHERE review_id = ${review_id}`)
+  return client.query(`UPDATE reviews SET helpfulness = helpfulness + 1 WHERE review_id = ${review_id}`);
+}
+
+const reportReview = (review_id) => {
+  return client.query(`UPDATE reviews SET reported = true WHERE review_id = ${review_id}`);
 }
 
 // const queryObject = {
@@ -152,6 +156,7 @@ module.exports = {
   getReviews,
   getReviewMetadata,
   postReview,
-  updateHelpful
+  updateHelpful,
+  reportReview
 }
 
