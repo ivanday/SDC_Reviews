@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 // const cors = require('cors');
-let {getReviews, getReviewMetadata, postReview} = require('./controllers.js');
+let {getReviews, getReviewMetadata, postReview, updateHelpful} = require('./controllers.js');
 
 const { Pool, Client } = require("pg");
 
@@ -42,7 +42,14 @@ app.post('/reviews', (req, res) => {
 });
 
 app.put('/reviews/:review_id/helpful', (req, res) => {
-  console.log(req);
+  updateHelpful(req.params.review_id)
+  .then((response) => {
+    res.status(204).end();
+  })
+  .catch((err) => {
+    res.send(err);
+    res.status(400).end();
+  })
 });
 
 app.listen(3000, (err) => {
